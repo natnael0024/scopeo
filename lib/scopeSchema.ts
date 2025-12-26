@@ -10,7 +10,7 @@ export const ScopeSchema = z.object({
   futureFeatures: z
     .array(z.string().min(3))
     .min(1, "At least one feature is required"),
-    
+
   assumptions: z
     .array(z.string().min(1))
     .min(1, "At least one assumption is required"),
@@ -22,6 +22,11 @@ export const ScopeSchema = z.object({
   timeline: z.string().min(5, "Timeline too short"),
 
   costEstimate: z.enum(["low", "medium", "high"]),
+
+  costDrivers: z
+    .array(z.string().min(3)),
+
+  costRange: z.string().min(5, "Cost range too short"),
 
   risks: z
     .array(

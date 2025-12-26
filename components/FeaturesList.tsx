@@ -37,8 +37,8 @@ export default function FeatureList({
   return (
     <ul className="space-y-2">
       {items.map((item, idx) => (
-        <li key={idx} className="flex items-start gap-3">
-          <Icon className={`${color} mt-1 shrink-0`} size={18} />
+        <li key={idx} className="flex items-center gap-3">
+          <Icon className={`${color} shrink-0`} size={18} />
           <p className="text-sm text-gray-800 dark:text-gray-200">
             {item}
           </p>

@@ -3,7 +3,6 @@ import { isLowQualityInput } from "@/lib/validateInput";
 import { ScopeSchema } from "@/lib/scopeSchema";
 
 
-
 export async function POST(req: Request) {
   try {
     const { clientRequest } = await req.json();
@@ -24,58 +23,6 @@ export async function POST(req: Request) {
     }
 
 
-    //   const prompt = `
-    // You are a senior product manager.
-    // Analyze this client request and produce:
-    // 1. Project summary
-    // 2. Core features
-    // 3. Timeline
-    // 4. Cost estimate (low/medium/high)
-    // 5. Risks / red flags
-    // 6. Clarifying questions
-
-    // Client request: "${clientRequest}"
-    // `;
-
-    // const prompt = `
-    // You are a senior product manager.
-
-    // Return ONLY valid JSON.
-    // Do NOT include markdown.
-    // Do NOT include explanations.
-    // Do NOT wrap in backticks.
-
-    // The JSON must strictly match this schema:
-
-    // {
-    //   "summary": string,
-    //   "features": string[],
-    //   "timeline": string,
-    //   "costEstimate": "low" | "medium" | "high",
-    //   "risks": [
-    //     { "description": string, "severity": "low" | "medium" | "high" }
-    //   ],
-    //   "clarifyingQuestions": string[],
-    //   "confidenceScore": number,
-    //   "skills": {
-    //     primary: string[];
-    //     supporting: string[];
-    //     optional: string[];
-    //   }
-
-    // }
-
-    // Rules:
-    // - summary must describe the project
-    // - confidenceScore must be between 0 and 1
-    // - risks must include at least one item
-    // - clarifyingQuestions must include at least one question
-    // - Set confidenceScore below 0.4 if the request lacks clear goals, features, or context
-    // - Timeline must be at least 10 characters long
-    
-    // Client request:
-    // """${clientRequest}"""
-    // `;
     const prompt = `
       You are a senior product manager known for preventing scope creep and unrealistic delivery expectations.
 
@@ -96,6 +43,8 @@ export async function POST(req: Request) {
         "outOfScope": string[],
         "timeline": string,
         "costEstimate": "low" | "medium" | "high",
+        "costDrivers": string[],
+        "costRange": string,
         "risks": [
           { "description": string, "severity": "low" | "medium" | "high" }
         ],
@@ -130,6 +79,14 @@ export async function POST(req: Request) {
       - confidenceScore must be between 0 and 1
       - Set confidenceScore below 0.5 if requirements, timelines, or success criteria are unclear
       - timeline must explain feasibility (not just duration) and be at least 20 characters long
+      - Determine a costEstimate ("low", "medium", "high") based on features, risks, timeline, and complexity.
+      - Provide a brief explanation of the drivers in "costDrivers".
+      - Provide an approximate cost range in "costRange" (USD or effort), e.g., "$20k - $50k" or "3-6 person-months".
+      - For cost Assume pricing is based on Upwork freelance rates, not agency pricing.
+      - Use the following baseline:
+        - $10–25/hour for general web development
+        - Estimate hours conservatively based on scope
+        - Do NOT use Western agency or enterprise pricing models
 
       Client request:
       """${clientRequest}"""
@@ -140,7 +97,7 @@ export async function POST(req: Request) {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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",
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         //   "HTTP-Referer": "", 
         //   "X-Title": "<YOUR_SITE_NAME>", 
           "Content-Type": "application/json"
@@ -163,16 +120,7 @@ export async function POST(req: Request) {
 
     const raw = data.choices[0].message.content;
 
-    // let parsed;
-    // try {
-    //   parsed = JSON.parse(raw);
-    // }  catch (error) {
-    //   return NextResponse.json(
-    //     { error: "Invalid JSON returned by AI" },
-    //     { status: 500 }
-    //   );
-    // }
-    // return NextResponse.json(parsed);
+
     let json;
     try {
       json = JSON.parse(raw);
@@ -191,16 +139,17 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: "AI response failed validation",
-          details: result.error.errors.map(e => e.message),
+          details: result.error.issues.map(e => e.message), // <-- use .issues
         },
         { status: 500 }
       );
     }
-
+    
 return NextResponse.json(result.data);
 
 
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

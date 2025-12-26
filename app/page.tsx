@@ -14,9 +14,6 @@ import RiskList from "@/components/RisksList";
 import FeatureList from "@/components/FeaturesList";
 import ClarifyingQuestionsList from "@/components/ClarifyingQuestionsList";
 import SkillsRequired from "@/components/SkillsRequired"
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { PaletteIcon } from "lucide-react";
-import { AnimatedBorderButton } from "@/components/AnimatedButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { SpinnerCustom } from "@/components/ui/spinner";
@@ -106,27 +103,6 @@ export default function Home() {
           ) : "Generate Scope"}
         </Button>
 
-      {/* <AnimatedBorderButton
-  onClick={generateScope}
-  disabled={loading || !input.trim()}
-  loading={loading}
->
-  Generate Scope
-</AnimatedBorderButton> */}
-
-      
-      {/* {
-        output && decision && metrics && (
-          <Button
-          onClick={generateScope}
-          size="lg"
-          disabled={loading || !input.trim()}
-          className="mb-4  bg-sky-600 hover:bg-sky-500 cursor-pointer duration-500"
-        >
-          {loading ? "Analyzing..." : "Generate Proposal"}
-        </Button>
-        )
-      } */}
       </div>
 
       {/* Error */}
@@ -139,9 +115,6 @@ export default function Home() {
       {/* Loading */}
       {loading && (
         <div className="flex flex-col md:flex-row gap-2">
-          {/* {[1, 2, 3].map((s) => (
-            <ScopeSkeleton key={s} />
-          ))} */}
           <div>
             <ScopeSkeleton type={'chart'} />
           </div>
@@ -176,28 +149,6 @@ export default function Home() {
 
             </Card>
 
-            {/* 🔑 DECISION SUMMARY (FIRST) */}
-            {/* <div className="mb-6 p-4 rounded border w-full ">
-              <h3 className="font-semibold mb-2">Decision Summary</h3>
-
-              <p>
-                <strong>Reliability:</strong>{" "}
-                {decision.reliability.toUpperCase()}
-              </p>
-
-              <p>
-                <strong>Risk Level:</strong>{" "}
-                {decision.riskLevel.toUpperCase()}
-              </p>
-
-              <p className="mt-2">
-                <strong>Recommended Action:</strong>{" "}
-                {decision.recommendation === "ASK_QUESTIONS" && "Ask clarifying questions"}
-                {decision.recommendation === "SEND_PROPOSAL" && "Send proposal"}
-                {decision.recommendation === "DECLINE" && "Decline project"}
-              </p>
-            </div> */}
-
             {/* DETAILS */}
             <div className=" flex-2">
               <ScopeCard title="Project Summary" content={output.summary} />
@@ -216,22 +167,11 @@ export default function Home() {
               <ScopeCard title="Timeline" content={output.timeline} />
               <ScopeCard
                 title="Cost Estimate"
-                content={`Estimated cost: ${output.costEstimate.toUpperCase()}`}
+                content={`Estimated cost: ${output.costEstimate.toUpperCase()} (${output.costRange}) `}
               />
-
-              {/* <ScopeCard
-                title="Risks"
-                content={
-                  "\n\n" +
-                  output.risks
-                    .map(
-                      (r) =>
-                        `- ${r.severity.toUpperCase()}: ${r.description}`
-                    )
-                    .join("\n")
-                }
-                
-              /> */}
+              {/* <ScopeCard title="Cost Drivers">
+                <FeatureList type="features" items={output.costDrivers} />
+              </ScopeCard>  */}
               <ScopeCard title="Risks">
                 <RiskList risks={output.risks} />
               </ScopeCard>
