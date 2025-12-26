@@ -1,12 +1,12 @@
 import { ScopeOutput } from "@/types/scope";
 
 export function getDecision(scope: ScopeOutput) {
-  // Reliability
+  // --- Reliability ---
   let reliability: "low" | "medium" | "high" = "high";
   if (scope.confidenceScore < 0.4) reliability = "low";
   else if (scope.confidenceScore < 0.7) reliability = "medium";
 
-  // Risk level
+  // --- Risk Level ---
   let riskLevel: "low" | "medium" | "high" = "low";
   if (scope.risks.some(r => r.severity === "high")) {
     riskLevel = "high";
@@ -14,15 +14,17 @@ export function getDecision(scope: ScopeOutput) {
     riskLevel = "medium";
   }
 
-  // Recommendation
-  let recommendation:
-    | "ASK_QUESTIONS"
-    | "SEND_PROPOSAL"
-    | "DECLINE" = "SEND_PROPOSAL";
+  // --- Recommendation ---
+  let recommendation: "ASK_QUESTIONS" | "SEND_PROPOSAL" | "DECLINE";
 
-  if (reliability === "low") recommendation = "ASK_QUESTIONS";
-  else if (riskLevel === "high") recommendation = "ASK_QUESTIONS";
-  else if (riskLevel === "medium") recommendation = "ASK_QUESTIONS";
+  // Decision logic
+  if (reliability === "low" && riskLevel === "high") {
+    recommendation = "DECLINE"; // Extreme case
+  } else if (reliability === "low" || riskLevel === "high" || riskLevel === "medium") {
+    recommendation = "ASK_QUESTIONS"; // Need more info
+  } else {
+    recommendation = "SEND_PROPOSAL"; // Confident and low risk
+  }
 
   return { reliability, riskLevel, recommendation };
 }

@@ -8,6 +8,8 @@ export interface ScopeOutput {
   outOfScope: string[]
   timeline: string
   costEstimate: "low" | "medium" | "high"
+  costDrivers:string[]
+  costRange: string
   risks: {
     description: string
     severity: RiskLevel
