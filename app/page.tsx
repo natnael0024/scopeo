@@ -27,7 +27,7 @@ export default function Home() {
 
   const decision = useMemo(() => {
     if (!output) return null;
-    const decision = getDecision(output);
+    // const decision = getDecision(output);
     return getDecision(output);
   }, [output]);
 
