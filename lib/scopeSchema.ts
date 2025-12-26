@@ -3,11 +3,23 @@ import { z } from "zod";
 export const ScopeSchema = z.object({
   summary: z.string().min(20, "Summary too short"),
 
-  features: z
+  mvpFeatures: z
     .array(z.string().min(3))
     .min(1, "At least one feature is required"),
+  
+  futureFeatures: z
+    .array(z.string().min(3))
+    .min(1, "At least one feature is required"),
+    
+  assumptions: z
+    .array(z.string().min(1))
+    .min(1, "At least one assumption is required"),
 
-  timeline: z.string().min(10, "Timeline too short"),
+  outOfScope: z
+    .array(z.string().min(1))
+    .min(1, "At least one out of scope item is required"),
+
+  timeline: z.string().min(5, "Timeline too short"),
 
   costEstimate: z.enum(["low", "medium", "high"]),
 

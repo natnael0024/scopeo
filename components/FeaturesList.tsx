@@ -1,16 +1,46 @@
-import { FaCheckCircle } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaLightbulb,
+  FaBan,
+} from "react-icons/fa";
+import { IconType } from "react-icons";
 
-export default function FeatureList({ features }: { features: string[] }) {
+type ListType = "features" | "assumption" | "out-of-scope";
+
+const TYPE_CONFIG: Record<
+  ListType,
+  { icon: IconType; color: string }
+> = {
+  features: {
+    icon: FaCheckCircle,
+    color: "text-green-600",
+  },
+  assumption: {
+    icon: FaLightbulb,
+    color: "text-yellow-500",
+  },
+  "out-of-scope": {
+    icon: FaBan,
+    color: "text-red-500",
+  },
+};
+
+export default function FeatureList({
+  items,
+  type,
+}: {
+  items: string[];
+  type: ListType;
+}) {
+  const { icon: Icon, color } = TYPE_CONFIG[type];
+
   return (
     <ul className="space-y-2">
-      {features.map((feature, idx) => (
+      {items.map((item, idx) => (
         <li key={idx} className="flex items-start gap-3">
-          <FaCheckCircle
-            className="text-green-600 mt-1 shrink-0"
-            size={18}
-          />
+          <Icon className={`${color} mt-1 shrink-0`} size={18} />
           <p className="text-sm text-gray-800 dark:text-gray-200">
-            {feature}
+            {item}
           </p>
         </li>
       ))}

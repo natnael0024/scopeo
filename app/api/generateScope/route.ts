@@ -37,44 +37,104 @@ export async function POST(req: Request) {
     // Client request: "${clientRequest}"
     // `;
 
+    // const prompt = `
+    // You are a senior product manager.
+
+    // Return ONLY valid JSON.
+    // Do NOT include markdown.
+    // Do NOT include explanations.
+    // Do NOT wrap in backticks.
+
+    // The JSON must strictly match this schema:
+
+    // {
+    //   "summary": string,
+    //   "features": string[],
+    //   "timeline": string,
+    //   "costEstimate": "low" | "medium" | "high",
+    //   "risks": [
+    //     { "description": string, "severity": "low" | "medium" | "high" }
+    //   ],
+    //   "clarifyingQuestions": string[],
+    //   "confidenceScore": number,
+    //   "skills": {
+    //     primary: string[];
+    //     supporting: string[];
+    //     optional: string[];
+    //   }
+
+    // }
+
+    // Rules:
+    // - summary must describe the project
+    // - confidenceScore must be between 0 and 1
+    // - risks must include at least one item
+    // - clarifyingQuestions must include at least one question
+    // - Set confidenceScore below 0.4 if the request lacks clear goals, features, or context
+    // - Timeline must be at least 10 characters long
+    
+    // Client request:
+    // """${clientRequest}"""
+    // `;
     const prompt = `
-    You are a senior product manager.
+      You are a senior product manager known for preventing scope creep and unrealistic delivery expectations.
 
-    Return ONLY valid JSON.
-    Do NOT include markdown.
-    Do NOT include explanations.
-    Do NOT wrap in backticks.
+      Your job is to CRITICALLY ANALYZE the client request, not just summarize it.
 
-    The JSON must strictly match this schema:
+      Return ONLY valid JSON.
+      Do NOT include markdown.
+      Do NOT include explanations.
+      Do NOT wrap in backticks.
 
-    {
-      "summary": string,
-      "features": string[],
-      "timeline": string,
-      "costEstimate": "low" | "medium" | "high",
-      "risks": [
-        { "description": string, "severity": "low" | "medium" | "high" }
-      ],
-      "clarifyingQuestions": string[],
-      "confidenceScore": number,
-      "skills": {
-        primary: string[];
-        supporting: string[];
-        optional: string[];
+      The JSON must strictly match this schema:
+
+      {
+        "summary": string,
+        "mvpFeatures": string[],
+        "futureFeatures": string[],
+        "assumptions": string[],
+        "outOfScope": string[],
+        "timeline": string,
+        "costEstimate": "low" | "medium" | "high",
+        "risks": [
+          { "description": string, "severity": "low" | "medium" | "high" }
+        ],
+        "clarifyingQuestions": string[],
+        "confidenceScore": number,
+        "skills": {
+          "primary": string[],
+          "supporting": string[],
+          "optional": string[]
+        }
       }
 
-    }
+      Rules:
+      - Be skeptical. If something is vague, CALL IT OUT.
+      - Explicitly list assumptions you are making.
+      - Explicitly list what is out of scope.
+      - Do NOT invent features that were not requested.
+      - Push back on unrealistic timelines or scope.
+      - If mobile is mentioned, clarify whether this means responsive web or native apps.
+      - If payments are mentioned, include compliance and refund considerations as risks.
+      - If AI is mentioned, treat it as optional and high risk unless detailed requirements are provided.
+      - Enforce zero contradictions between mvp features, assumptions, out-of-scope and clarifying questions
 
-    Rules:
-    - confidenceScore must be between 0 and 1
-    - risks must include at least one item
-    - clarifyingQuestions must include at least one question
-    - Set confidenceScore below 0.4 if the request lacks clear goals, features, or context
-    - Timeline must be at least 10 characters long
-    
-    Client request:
-    """${clientRequest}"""
-    `;
+      Field rules:
+      - summary must describe the project AND note major uncertainties
+      - mvpFeatures must be limited to clearly implied MVP functionality
+      - futureFeatures must include implied future functionality
+      - assumptions must include at least 3 items if any ambiguity exists
+      - outOfScope must include at least 3 items
+      - risks must include at least one HIGH severity risk if payments, AI, or marketplaces are involved
+      - clarifyingQuestions must include at least 5 items for marketplace products
+      - confidenceScore must be between 0 and 1
+      - Set confidenceScore below 0.5 if requirements, timelines, or success criteria are unclear
+      - timeline must explain feasibility (not just duration) and be at least 20 characters long
+
+      Client request:
+      """${clientRequest}"""
+      `;
+
 
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
