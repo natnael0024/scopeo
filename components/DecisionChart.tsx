@@ -1,6 +1,8 @@
 "use client";
 
 import { Doughnut } from "react-chartjs-2";
+import type { ChartOptions, TooltipItem } from "chart.js";
+
 import "@/lib/chartConfig";
 import { DecisionMetrics } from "@/types/decision";
 
@@ -33,7 +35,7 @@ export default function DecisionChart({ metrics }: { metrics: DecisionMetrics })
       tooltip: {
         enabled: true,
         callbacks: {
-          label: function(context: any) {
+          label(context: TooltipItem<"doughnut">) {
             const label = context.label || '';
             const value = context.raw; 
             return `${label}: ${value}%`;
