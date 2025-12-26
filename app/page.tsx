@@ -100,7 +100,7 @@ export default function Home() {
             <div className=" flex items-center gap-2">
               <SpinnerCustom/> Analyzing...
             </div>
-          ) : "Generate Scope"}
+          ) : "Analyze Request"}
         </Button>
 
       </div>
