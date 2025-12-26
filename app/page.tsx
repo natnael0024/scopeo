@@ -14,6 +14,13 @@ import RiskList from "@/components/RisksList";
 import FeatureList from "@/components/FeaturesList";
 import ClarifyingQuestionsList from "@/components/ClarifyingQuestionsList";
 import SkillsRequired from "@/components/SkillsRequired"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { PaletteIcon } from "lucide-react";
+import { AnimatedBorderButton } from "@/components/AnimatedButton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import { SpinnerCustom } from "@/components/ui/spinner";
+
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -63,9 +70,13 @@ export default function Home() {
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Header */}
-      <div className="flex items-center justify-between py-5">
-        <h1 className="text-xl md:text-3xl font-bold text-green-600">
-          C
+      <div className="flex items-center justify-between py-2 pb-4">
+        <h1 className="text-xl md:text-2xl font-bold text-green-600">
+          <Image
+          src={'/logo.png'}
+          alt=""
+          width={100}
+          height={100}/>
         </h1>
         <ModeToggle />
       </div>
@@ -75,21 +86,36 @@ export default function Home() {
         rows={5}
         placeholder="Paste client request here..."
         value={input}
+        
         onChange={(e) => setInput(e.target.value)}
-        className="mb-4"
+        className="mb-4  bg-white dark:bg-[#0f1311] selection:bg-green-500 selection:text-white"
         autoFocus
       />
 
       <div className=" flex">
-      <Button
-        onClick={generateScope}
-        size="lg"
-        disabled={loading || !input.trim()}
-        className="mb-4  bg-green-600 cursor-pointer duration-500"
-      >
-        {loading ? "Analyzing..." : "Generate Scope"}
-      </Button>
-      {
+        <Button
+          onClick={generateScope}
+          size="lg"
+          disabled={loading || !input.trim()}
+          className="mb-4 py-6 px-10 dark:text-white text-md rounded-full bg-green-600 cursor-pointer duration-500"
+        >
+          {loading ?(
+            <div className=" flex items-center gap-2">
+              <SpinnerCustom/> Analyzing...
+            </div>
+          ) : "Generate Scope"}
+        </Button>
+
+      {/* <AnimatedBorderButton
+  onClick={generateScope}
+  disabled={loading || !input.trim()}
+  loading={loading}
+>
+  Generate Scope
+</AnimatedBorderButton> */}
+
+      
+      {/* {
         output && decision && metrics && (
           <Button
           onClick={generateScope}
@@ -100,7 +126,7 @@ export default function Home() {
           {loading ? "Analyzing..." : "Generate Proposal"}
         </Button>
         )
-      }
+      } */}
       </div>
 
       {/* Error */}
@@ -131,21 +157,24 @@ export default function Home() {
       {output && decision && metrics && (
         <>
           <div className=" flex flex-col md:flex-row gap-4 justify-between">
-            <div className="mb-6 p-4 rounded flex-1  ">
-              <h3 className="font-semibold mb-4 text-center">
-                Decision Summary
-              </h3>
+            <Card className="mb-4 h-fit flex-1 relative overflow-hidden rounded-2xl border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle>Decision Summary</CardTitle>
+              </CardHeader>
 
-              <DecisionChart metrics={metrics} />
+              <CardContent>
 
-              <p className="mt-4 text-center">
-                <strong>Recommended Action:</strong>{" "}
-                {decision.recommendation === "ASK_QUESTIONS" && "Ask clarifying questions"}
-                {decision.recommendation === "SEND_PROPOSAL" && "Send proposal"}
-                {decision.recommendation === "DECLINE" && "Decline project"}
-              </p>
+                <DecisionChart metrics={metrics} />
 
-            </div>
+                <p className="mt-4 text-center">
+                  <strong>Recommended Action:</strong>{" "}
+                  {decision.recommendation === "ASK_QUESTIONS" && "Ask clarifying questions"}
+                  {decision.recommendation === "SEND_PROPOSAL" && "Send proposal"}
+                  {decision.recommendation === "DECLINE" && "Decline project"}
+                </p>
+              </CardContent>
+
+            </Card>
 
             {/* 🔑 DECISION SUMMARY (FIRST) */}
             {/* <div className="mb-6 p-4 rounded border w-full ">
@@ -172,8 +201,17 @@ export default function Home() {
             {/* DETAILS */}
             <div className=" flex-2">
               <ScopeCard title="Project Summary" content={output.summary} />
-              <ScopeCard title="Core Features">
-                <FeatureList features={output.features} />
+              <ScopeCard title="MVP Features">
+                <FeatureList type="features" items={output.mvpFeatures} />
+              </ScopeCard>
+              <ScopeCard title="Future Features">
+                <FeatureList type="features" items={output.futureFeatures} />
+              </ScopeCard>
+              <ScopeCard title="Assumptions">
+                <FeatureList type="assumption" items={output.assumptions} />
+              </ScopeCard>
+              <ScopeCard title="Out of scope">
+                <FeatureList type="out-of-scope" items={output.outOfScope} />
               </ScopeCard>
               <ScopeCard title="Timeline" content={output.timeline} />
               <ScopeCard
@@ -216,6 +254,12 @@ export default function Home() {
           </div>
         </>
       )}
+
+      <div>
+        <footer className="mt-16 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          © {new Date().getFullYear()} scopeo. All rights reserved.
+        </footer>
+      </div>
     </div>
   );
 }
