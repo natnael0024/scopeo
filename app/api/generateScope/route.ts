@@ -99,7 +99,7 @@ export async function POST(req: Request) {
         headers: {
           "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         //   "HTTP-Referer": "", 
-        //   "X-Title": "<YOUR_SITE_NAME>", 
+        //   "X-Title": "SITE_NAME", 
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -113,13 +113,10 @@ export async function POST(req: Request) {
         })
       });
 
-    console.log(response)
-
     const data = await response.json();
-    console.log('AI RESPONSE:',data)
+    console.log(`AI RESPONSE: ${data}`)
 
     const raw = data.choices[0].message.content;
-
 
     let json;
     try {
