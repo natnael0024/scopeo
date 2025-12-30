@@ -92,7 +92,7 @@ export async function POST(req: Request) {
       """${clientRequest}"""
       `;
 
-
+    console.log(`CLIENT REQ: ${clientRequest}`)
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",

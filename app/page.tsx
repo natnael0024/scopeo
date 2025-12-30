@@ -63,7 +63,7 @@ export default function Home() {
     }
   };
 
-  console.log('ou2873:',output)
+  // console.log('ou2873:',output)
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Header */}
