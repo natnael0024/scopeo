@@ -8,7 +8,7 @@ export function DotBackground({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen w-full bg-white dark:bg-black">
+    <div className="relative min-h-screen w-full bg-white dark:bg-background">
       {/* Static dots layer */}
       <div
         className={cn(
@@ -20,7 +20,7 @@ export function DotBackground({
       />
 
       {/* Static fade mask */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_70%,black)] dark:bg-black" />
+      <div className="fixed inset-0 z-0 pointer-events-none bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_70%,black)] dark:bg-background" />
 
       {/* Page content */}
       <div className="relative z-10">
