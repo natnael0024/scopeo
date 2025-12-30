@@ -207,13 +207,165 @@
 // /////
 "use client";
 
-import { Suspense } from "react";
-import ModeRouter from "@/components/ModeRouter";
+import { useMemo, useState } from "react";
 
-export default function Page() {
+import ScopeCard from "@/components/ScopeCard";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { ScopeSkeleton } from "@/components/ScopeSkeleton";
+import { ModeToggle } from "@/components/ModeToggle";
+import { ScopeOutput } from "@/types/scope";
+import { getDecision } from "@/lib/decisionEngine";
+import DecisionChart from "@/components/DecisionChart";
+import { buildDecisionMetrics } from "@/lib/decisionMetrics";
+import RiskList from "@/components/RisksList";
+import FeatureList from "@/components/FeaturesList";
+import ClarifyingQuestionsList from "@/components/ClarifyingQuestionsList";
+import SkillsRequired from "@/components/SkillsRequired";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import { SpinnerCustom } from "@/components/ui/spinner";
+
+
+
+export default function Analyzer() {
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState<ScopeOutput | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const decision = useMemo(() => {
+    if (!output) return null;
+    return getDecision(output);
+  }, [output]);
+
+  const metrics = useMemo(() => {
+    if (!output) return null;
+    return buildDecisionMetrics(output);
+  }, [output]);
+
+  const generateScope = async () => {
+    setLoading(true);
+    setError(null);
+    setOutput(null);
+
+    try {
+      const res = await fetch("/api/generateScope", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientRequest: input }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to generate scope");
+        return;
+      }
+
+      setOutput(data as ScopeOutput);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  /* ANALYZER */
   return (
-    <Suspense fallback={null}>
-      <ModeRouter />
-    </Suspense>
+    <div className="max-w-7xl mx-auto p-4">
+      {/* Header */}
+      <div className="flex items-center justify-between py-2 pb-4">
+        <Image src="/logo.png" alt="Scopeo" width={100} height={40} />
+        <ModeToggle />
+      </div>
+
+      {/* Input */}
+      <Textarea
+        rows={5}
+        placeholder="Paste client request here..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        className="mb-4 rounded-2xl bg-white dark:bg-[#0f1311]"
+        autoFocus
+      />
+
+      <Button
+        onClick={generateScope}
+        size="lg"
+        disabled={loading || !input.trim()}
+        className="mb-4 py-6 px-10 rounded-full"
+      >
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <SpinnerCustom /> Analyzing...
+          </div>
+        ) : (
+          "Analyze Request"
+        )}
+      </Button>
+
+      {/* Error */}
+      {error && (
+        <div className="mb-4 p-3 rounded bg-yellow-100 text-yellow-800">
+          ⚠️ {error}
+        </div>
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div className="flex flex-col md:flex-row gap-2">
+          <ScopeSkeleton type="chart" />
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3].map((s) => (
+              <ScopeSkeleton type="card" key={s} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Output */}
+      {output && decision && metrics && (
+        <div className="flex flex-col md:flex-row gap-4">
+          <Card className="flex-1 rounded-2xl">
+            <CardHeader>
+              <CardTitle>Decision Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DecisionChart metrics={metrics} />
+              <p className="mt-4 text-center">
+                <strong>Recommended Action:</strong>{" "}
+                {decision.recommendation === "ASK_QUESTIONS" && "Ask clarifying questions"}
+                {decision.recommendation === "SEND_PROPOSAL" && "Send proposal"}
+                {decision.recommendation === "DECLINE" && "Decline project"}
+              </p>
+            </CardContent>
+          </Card>
+
+          <div className="flex-2">
+            <ScopeCard title="Project Summary" content={output.summary} />
+            <ScopeCard title="MVP Features">
+              <FeatureList type="features" items={output.mvpFeatures} />
+            </ScopeCard>
+            <ScopeCard title="Future Features">
+              <FeatureList type="features" items={output.futureFeatures} />
+            </ScopeCard>
+            <ScopeCard title="Risks">
+              <RiskList risks={output.risks} />
+            </ScopeCard>
+            <ScopeCard title="Clarifying Questions">
+              <ClarifyingQuestionsList clarifyingQuestions={output.clarifyingQuestions} />
+            </ScopeCard>
+          </div>
+
+          <div className="flex-1">
+            <ScopeCard title="Skills Required">
+              <SkillsRequired {...output.skills} />
+            </ScopeCard>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
