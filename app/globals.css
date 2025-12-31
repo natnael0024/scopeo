@@ -146,42 +146,72 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
-}
-/* 
 
-@keyframes gradient-x {
+  --animate-first: moveVertical 30s ease infinite;
+  --animate-second: moveInCircle 20s reverse infinite;
+  --animate-third: moveInCircle 40s linear infinite;
+  --animate-fourth: moveHorizontal 40s ease infinite;
+  --animate-fifth: moveInCircle 20s ease infinite;
+}
+
+
+@keyframes moveHorizontal {
   0% {
-    background-position: 0% 50%;
+    transform: translateX(-50%) translateY(-10%);
   }
   50% {
-    background-position: 100% 50%;
+    transform: translateX(50%) translateY(10%);
   }
   100% {
-    background-position: 0% 50%;
+    transform: translateX(-50%) translateY(-10%);
   }
 }
-
-
-@keyframes gradient-border {
+ 
+@keyframes moveInCircle {
   0% {
-    background-position: 0% 50%;
+    transform: rotate(0deg);
   }
   50% {
-    background-position: 100% 50%;
+    transform: rotate(180deg);
   }
   100% {
-    background-position: 0% 50%;
+    transform: rotate(360deg);
   }
-} */
-
-@keyframes gradient-border-move {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+}
+ 
+@keyframes moveVertical {
+  0% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(50%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
 }
 
-.s{
-  color: #404040;
-  color: #535353;
-  color: #0f1311;
-}
+
+.gradient {
+  height: fit-content;
+  z-index: -10;
+  max-width: 940px;
+  background-image: radial-gradient(
+      at 27% 37%,
+      hsla(215, 98%, 61%, 1) 0px,
+      transparent 0%
+    ),
+    radial-gradient(at 52% 99%, rgba(34, 197, 94, 0.9) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, rgba(74, 222, 128, 0.9) 0px, transparent 50%),
+    radial-gradient(at 97% 96%, rgba(110, 231, 183, 0.9) 0px, transparent 50%),
+    radial-gradient(at 33% 50%, rgba(16, 185, 129, 0.9) 0px, transparent 50%),
+    radial-gradient(at 79% 53%, rgba(132, 204, 22, 0.9) 0px, transparent 50%);
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  filter: blur(100px) saturate(150%);
+  opacity: 0.3;
+  overflow: hidden;
+} 
+ 
