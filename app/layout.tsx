@@ -36,9 +36,12 @@ export default function RootLayout({
         className={`${poppins.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <DotBackground>
-            {children}
-          </DotBackground>
+          {/* <DotBackground> */}
+            {/* <GradientAnimation> */}
+            {/* <div className="gradient overflow-hidden mx-auto"></div> */}
+              {children}
+            {/* </GradientAnimation> */}
+          {/* </DotBackground> */}
         </ThemeProvider>
       </body>
     </html>

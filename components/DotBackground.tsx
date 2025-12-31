@@ -20,7 +20,7 @@ export function DotBackground({
       />
 
       {/* Static fade mask */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_70%,black)] dark:bg-background" />
+      <div className="fixed inset-0 z-0 pointer-events-none bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_50%,black)] dark:bg-background" />
 
       {/* Page content */}
       <div className="relative z-10">
