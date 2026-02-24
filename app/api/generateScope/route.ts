@@ -115,7 +115,7 @@ export async function POST(req: Request) {
 
     const data = await response.json();
     console.log(`AI RESPONSE: ${data}`)
-    console.log(process.env.OPENROUTER_API_KEY)
+    
     console.log("AI RESPONSE (stringified):", JSON.stringify(data, null, 2));
 
     const raw = data.choices[0].message.content;
