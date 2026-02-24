@@ -116,7 +116,7 @@ export async function POST(req: Request) {
     const data = await response.json();
     console.log(`AI RESPONSE: ${data}`)
 
-    console.log(${data.choices})
+    console.log(data.choices)
 
     const raw = data.choices[0].message.content;
 
