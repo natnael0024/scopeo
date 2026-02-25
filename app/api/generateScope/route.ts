@@ -115,17 +115,19 @@ export async function POST(req: Request) {
       });
 
     const data = await response.json();
-    console.log(`AI RESPONSE: ${data}`)
+    // console.log(`AI RESPONSE: ${data}`)
     
-    console.log("AI RESPONSE (stringified):", JSON.stringify(data, null, 2));
+    // console.log("AI RESPONSE (stringified):", JSON.stringify(data, null, 2));
 
-    const raw = data.choices[0].message.content;
+    // const raw = data.choices[0].message.content;
 
     let json;
     try {
-      json = JSON.parse(raw);
+      // json = JSON.parse(raw);
+      json = JSON.stringify(data, null, 2)
     } catch {
       return NextResponse.json(
+        console.log("AI returned invalid JSON")
         { error: "AI returned invalid JSON" },
         { status: 500 }
       );
