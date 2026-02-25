@@ -119,7 +119,7 @@ export async function POST(req: Request) {
     
     // console.log("AI RESPONSE (stringified):", JSON.stringify(data, null, 2));
 
-    const raw = data.choices[0].message.content;
+    let raw = data.choices[0].message.content;
     // console.log( data.choices[0].message.content)
     if (!raw) {
       console.log("No content returned from AI ")
