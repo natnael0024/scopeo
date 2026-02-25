@@ -120,11 +120,12 @@ export async function POST(req: Request) {
     // console.log("AI RESPONSE (stringified):", JSON.stringify(data, null, 2));
 
     // const raw = data.choices[0].message.content;
+    console.log( data.choices[0].message.content)
 
     let json;
     try {
-      // json = JSON.parse(raw);
-      json = JSON.stringify(data, null, 2)
+      const raw = JSON.stringify(data, null, 2)
+      json = JSON.parse(raw);
     } catch {
       console.log("AI returned invalid JSON")
       return NextResponse.json(
