@@ -103,7 +103,8 @@ export async function POST(req: Request) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          "model": "tngtech/deepseek-r1t2-chimera:free",
+          // "model": "tngtech/deepseek-r1t2-chimera:free",
+          "model": "deepseek/deepseek-chat",
           "messages": [
             {
               "role": "user",
