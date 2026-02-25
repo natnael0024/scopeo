@@ -126,8 +126,8 @@ export async function POST(req: Request) {
       // json = JSON.parse(raw);
       json = JSON.stringify(data, null, 2)
     } catch {
+      console.log("AI returned invalid JSON")
       return NextResponse.json(
-        console.log("AI returned invalid JSON")
         { error: "AI returned invalid JSON" },
         { status: 500 }
       );
