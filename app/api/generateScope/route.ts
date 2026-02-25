@@ -121,7 +121,21 @@ export async function POST(req: Request) {
 
     const raw = data.choices[0].message.content;
     // console.log( data.choices[0].message.content)
+    if (!raw) {
+      console.log("No content returned from AI ")
+      return NextResponse.json(
+      { error: "No content returned from AI" },
+      { status: 500 }
+      );
+    }
 
+    // Remove markdown code fences
+    raw = raw
+      .replace(/```json\s*/i, "")
+      .replace(/```/g, "")
+      .trim();
+
+    
     let json;
     try {
       // const raw = JSON.stringify(data, null, 2)
